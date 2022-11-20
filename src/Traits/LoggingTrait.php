@@ -3,6 +3,7 @@
 namespace KieranFYI\Logging\Traits;
 
 use Exception;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
@@ -24,14 +25,14 @@ trait LoggingTrait
     /**
      * @param string $level
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function log(string $level, string $message, array $context = []): void
+    public function log(string $level, string $message, array|Arrayable $context = []): void
     {
         $log = new ModelLog([
             'level' => $level,
             'message' => $message,
-            'context' => $context,
+            'context' => $context instanceof Arrayable ? $context->toArray() : $context,
             'data' => $this->toArray(),
         ]);
 
@@ -50,12 +51,19 @@ trait LoggingTrait
     /**
      * @param string $level
      * @param string|Exception $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function exception(string $level, string|Exception $message, array $context = []): void
+    public function exception(string $level, string|Exception $message, array|Arrayable $context = []): void
     {
         if ($message instanceof Exception) {
-            $this->log($level, $message->getMessage(), ['context' => $context, 'trace' => $message->getTrace()]);
+            $this->log(
+                $level,
+                $message->getMessage(),
+                [
+                    'context' => $context instanceof Arrayable ? $context->toArray() : $context,
+                    'trace' => $message->getTrace()
+                ]
+            );
         } else {
             $this->log($level, $message, $context);
         }
@@ -63,81 +71,81 @@ trait LoggingTrait
 
     /**
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function debug(string $message, array $context = []): void
+    public function debug(string $message, array|Arrayable $context = []): void
     {
         $this->log('debug', $message, $context);
     }
 
     /**
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function info(string $message, array $context = []): void
+    public function info(string $message, array|Arrayable $context = []): void
     {
         $this->log('info', $message, $context);
     }
 
     /**
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function notice(string $message, array $context = []): void
+    public function notice(string $message, array|Arrayable $context = []): void
     {
         $this->log('notice', $message, $context);
     }
 
     /**
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function warning(string $message, array $context = []): void
+    public function warning(string $message, array|Arrayable $context = []): void
     {
         $this->log('warning', $message, $context);
     }
 
     /**
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function alert(string $message, array $context = []): void
+    public function alert(string $message, array|Arrayable $context = []): void
     {
         $this->log('alert', $message, $context);
     }
 
     /**
      * @param string|Exception $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function error(string|Exception $message, array $context = []): void
+    public function error(string|Exception $message, array|Arrayable $context = []): void
     {
         $this->exception('error', $message, $context);
     }
 
     /**
      * @param string|Exception $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function critical(string|Exception $message, array $context = []): void
+    public function critical(string|Exception $message, array|Arrayable $context = []): void
     {
         $this->exception('critical', $message, $context);
     }
 
     /**
      * @param string|Exception $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function emergency(string|Exception $message, array $context = []): void
+    public function emergency(string|Exception $message, array|Arrayable $context = []): void
     {
         $this->exception('emergency', $message, $context);
     }
 
     /**
      * @param string $message
-     * @param array $context
+     * @param array|Arrayable $context
      */
-    public function security(string $message, array $context = []): void
+    public function security(string $message, array|Arrayable $context = []): void
     {
         $this->log('security', $message, $context);
     }

@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KieranFYI\Misc\Traits\ImmutableTrait;
 
+/**
+ * @property string $level
+ * @property string $message
+ * @property array $context
+ * @property array $data
+ * @property Model $model
+ * @property Model $user
+ */
 class ModelLog extends Model
 {
     use SoftDeletes;

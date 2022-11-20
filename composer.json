@@ -21,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "KieranFYI\\Logging\\Providers\\ServiceProvider"
+                "KieranFYI\\Logging\\Providers\\LoggingPackageServiceProvider"
             ]
         }
     },

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c6249629f7bb20d1b09e593a3786a17",
+    "content-hash": "568664b3375461c7a1034435520b1382",
     "packages": [
         {
             "name": "brick/math",
@@ -898,17 +898,17 @@
             "time": "2022-10-26T14:07:24+00:00"
         },
         {
-            "name": "kieran/misc",
-            "version": "dev-main",
+            "name": "kieranfyi/misc",
+            "version": "v0.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:Kieran-FYI/misc.git",
-                "reference": "7031cc5d2dd5012b961114791df6f0b1573789f8"
+                "reference": "bd2dd2f128d4fa9c4b7bb660000757e6037b5f82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Kieran-FYI/misc/zipball/7031cc5d2dd5012b961114791df6f0b1573789f8",
-                "reference": "7031cc5d2dd5012b961114791df6f0b1573789f8",
+                "url": "https://api.github.com/repos/Kieran-FYI/misc/zipball/bd2dd2f128d4fa9c4b7bb660000757e6037b5f82",
+                "reference": "bd2dd2f128d4fa9c4b7bb660000757e6037b5f82",
                 "shasum": ""
             },
             "require": {
@@ -917,7 +917,6 @@
                 "laravel/framework": "^9.19",
                 "php": "^8.1"
             },
-            "default-branch": true,
             "type": "project",
             "autoload": {
                 "psr-4": {
@@ -931,10 +930,10 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/Kieran-FYI/misc/tree/main",
+                "source": "https://github.com/Kieran-FYI/misc/tree/v0.1",
                 "issues": "https://github.com/Kieran-FYI/misc/issues"
             },
-            "time": "2022-11-20T05:24:06+00:00"
+            "time": "2022-11-20T05:33:17+00:00"
         },
         {
             "name": "laravel/framework",
@@ -5141,9 +5140,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "kieran/misc": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

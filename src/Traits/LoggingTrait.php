@@ -14,6 +14,8 @@ use KieranFYI\Logging\Models\Logs\ModelLog;
  */
 trait LoggingTrait
 {
+    use HasLogging;
+
     /**
      * @return MorphMany
      */
@@ -27,7 +29,7 @@ trait LoggingTrait
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function log(string $level, string $message, array|Arrayable $context = []): void
+    public function log(string $level, string $message, array|Arrayable $context = [], string $user_message = null): void
     {
         $log = new ModelLog([
             'level' => $level,
@@ -39,10 +41,21 @@ trait LoggingTrait
         /** @var Model $this */
         $log->model()->associate($this);
 
-        if (Auth::hasUser() && in_array(Model::class, class_uses_recursive(Auth::user()))) {
+        if (
+            Auth::hasUser()
+            && (
+                Auth::user() !== $this
+                && in_array(Model::class, class_uses_recursive(Auth::user()))
+            )
+        ) {
             /** @var Model $user */
             $user = Auth::user();
             $log->user()->associate($user);
+
+            if (!empty($user_message) && $this->hasLogging($user)) {
+                /** @var LoggingTrait $user */
+                $user->log($level, $message, $context);
+            }
         }
 
         $log->save();
@@ -53,7 +66,7 @@ trait LoggingTrait
      * @param string|Exception $message
      * @param array|Arrayable $context
      */
-    public function exception(string $level, string|Exception $message, array|Arrayable $context = []): void
+    public function exception(string $level, string|Exception $message, array|Arrayable $context = [], string $user_message = null): void
     {
         if ($message instanceof Exception) {
             $this->log(
@@ -62,10 +75,11 @@ trait LoggingTrait
                 [
                     'context' => $context instanceof Arrayable ? $context->toArray() : $context,
                     'trace' => $message->getTrace()
-                ]
+                ],
+                $user_message
             );
         } else {
-            $this->log($level, $message, $context);
+            $this->log($level, $message, $context, $user_message);
         }
     }
 
@@ -73,80 +87,80 @@ trait LoggingTrait
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function debug(string $message, array|Arrayable $context = []): void
+    public function debug(string $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->log('debug', $message, $context);
+        $this->log('debug', $message, $context, $user_message);
     }
 
     /**
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function info(string $message, array|Arrayable $context = []): void
+    public function info(string $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->log('info', $message, $context);
+        $this->log('info', $message, $context, $user_message);
     }
 
     /**
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function notice(string $message, array|Arrayable $context = []): void
+    public function notice(string $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->log('notice', $message, $context);
+        $this->log('notice', $message, $context, $user_message);
     }
 
     /**
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function warning(string $message, array|Arrayable $context = []): void
+    public function warning(string $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->log('warning', $message, $context);
+        $this->log('warning', $message, $context, $user_message);
     }
 
     /**
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function alert(string $message, array|Arrayable $context = []): void
+    public function alert(string $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->log('alert', $message, $context);
+        $this->log('alert', $message, $context, $user_message);
     }
 
     /**
      * @param string|Exception $message
      * @param array|Arrayable $context
      */
-    public function error(string|Exception $message, array|Arrayable $context = []): void
+    public function error(string|Exception $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->exception('error', $message, $context);
+        $this->exception('error', $message, $context, $user_message);
     }
 
     /**
      * @param string|Exception $message
      * @param array|Arrayable $context
      */
-    public function critical(string|Exception $message, array|Arrayable $context = []): void
+    public function critical(string|Exception $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->exception('critical', $message, $context);
+        $this->exception('critical', $message, $context, $user_message);
     }
 
     /**
      * @param string|Exception $message
      * @param array|Arrayable $context
      */
-    public function emergency(string|Exception $message, array|Arrayable $context = []): void
+    public function emergency(string|Exception $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->exception('emergency', $message, $context);
+        $this->exception('emergency', $message, $context, $user_message);
     }
 
     /**
      * @param string $message
      * @param array|Arrayable $context
      */
-    public function security(string $message, array|Arrayable $context = []): void
+    public function security(string $message, array|Arrayable $context = [], string $user_message = null): void
     {
-        $this->log('security', $message, $context);
+        $this->log('security', $message, $context, $user_message);
     }
 }

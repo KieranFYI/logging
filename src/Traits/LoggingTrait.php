@@ -19,6 +19,21 @@ trait LoggingTrait
 {
     use HasLoggingTrait;
 
+    public static function bootLoggingTrait()
+    {
+        static::updated(function (Model $model) {
+            static::observeChanges($model, 'updated');
+        });
+
+        static::created(function (Model $model) {
+            static::observeChanges($model, 'created');
+        });
+
+        static::deleted(function (Model $model) {
+            static::observeChanges($model, 'deleted');
+        });
+    }
+
     /**
      * Get the policies defined on the provider.
      *
@@ -173,5 +188,40 @@ trait LoggingTrait
     public function security(string $message, array|Arrayable $context = []): void
     {
         $this->log('security', $message, $context);
+    }
+
+    /**
+     * @param HasLoggingTrait $model
+     * @param string $action
+     *
+     * @return void
+     */
+    private static function observeChanges(Model $model, string $action): void
+    {
+        if (!static::hasLogging($model)) {
+            return;
+        }
+
+        $model->log(
+            'change',
+            ucfirst($action),
+            [
+            'action' => $action,
+            'new' => $action !== 'deleted' ? static::cleanKeys($model, $model->getAttributes()) : null,
+            'old' => $action !== 'created' ? static::cleanKeys($model, $model->getOriginal()) : null,
+            'changes' => $action === 'updated' ? static::cleanKeys($model, $model->getChanges()) : null,
+        ]);
+    }
+
+    /**
+     * Removes hidden keys, so they are not stored in the database.
+     *
+     * @param Model $model
+     * @param array $array
+     * @return array
+     */
+    private static function cleanKeys(Model $model, array $array): array
+    {
+        return array_diff_key($array, array_flip($model->getHidden()));
     }
 }

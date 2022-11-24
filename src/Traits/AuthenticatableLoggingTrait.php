@@ -5,7 +5,7 @@ namespace KieranFYI\Logging\Traits;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use KieranFYI\Logging\Models\Logs\ModelLog;
 
-class AuthenticatableLoggingTrait
+trait AuthenticatableLoggingTrait
 {
     use LoggingTrait;
 

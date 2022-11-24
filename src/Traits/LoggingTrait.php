@@ -7,7 +7,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
-use KieranFYI\Logging\Models\Logs\ModelLog;
+use KieranFYI\Logging\Models\ModelLog;
 use TypeError;
 
 /**

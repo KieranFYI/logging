@@ -1,6 +1,6 @@
 <?php
 
-namespace KieranFYI\Logging\Models\Logs;
+namespace KieranFYI\Logging\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;

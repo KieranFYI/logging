@@ -2,7 +2,7 @@
 
 namespace KieranFYI\Logging\Traits;
 
-trait HasLogging
+trait HasLoggingTrait
 {
     /**
      * @param mixed $object

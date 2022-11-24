@@ -28,7 +28,7 @@ trait LoggingTrait
     {
         if (property_exists($this, 'morphTarget')) {
             if (!is_string($this->morphTarget)) {
-                throw new TypeError('Invalid Type on "morphTarget", string expected');
+                throw new TypeError(self::class.'::morphTarget(): Property ($morphTarget) must be of type string');
             }
 
             return $this->morphTarget;

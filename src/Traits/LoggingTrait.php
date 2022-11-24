@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use KieranFYI\Logging\Models\Logs\ModelLog;
+use TypeError;
 
 /**
+ * @property string $morphTarget
+ *
  * @mixin Model
  */
 trait LoggingTrait
@@ -17,11 +20,28 @@ trait LoggingTrait
     use HasLoggingTrait;
 
     /**
+     * Get the policies defined on the provider.
+     *
+     * @return string
+     */
+    public function morphTarget(): string
+    {
+        if (property_exists($this, 'morphTarget')) {
+            if (!is_string($this->morphTarget)) {
+                throw new TypeError('Invalid Type on "morphTarget", string expected');
+            }
+
+            return $this->morphTarget;
+        }
+        return 'model';
+    }
+
+    /**
      * @return MorphMany
      */
     public function logs(): MorphMany
     {
-        return $this->morphMany(ModelLog::class, 'model');
+        return $this->morphMany(ModelLog::class, $this->morphTarget());
     }
 
     /**

@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->morphs('model');
             $table->nullableMorphs('user');
-            $table->string('level')
+            $table->string('level', 32)
                 ->index();
             $table->text('message');
             $table->longText('context')

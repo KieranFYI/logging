@@ -26,11 +26,11 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['level', 'model_type', 'model_id']);
-            $table->index(['level', 'model_type']);
-            $table->index(['level', 'user_type', 'user_id']);
-            $table->index(['level', 'model_type', 'user_type', 'user_id']);
-            $table->index(['level', 'model_type', 'model_id', 'user_type', 'user_id']);
+            $table->index(['level', 'model_type', 'model_id'], 'model_logs_index_1');
+            $table->index(['level', 'model_type'], 'model_logs_index_2');
+            $table->index(['level', 'user_type', 'user_id'], 'model_logs_index_3');
+            $table->index(['level', 'model_type', 'user_type', 'user_id'], 'model_logs_index_4');
+            $table->index(['level', 'model_type', 'model_id', 'user_type', 'user_id'], 'model_logs_index_5');
 
         });
     }

@@ -1,6 +1,7 @@
 {
     "name": "kieranfyi/logging",
     "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "KieranFYI\\Logging\\": "src/"
@@ -10,12 +11,6 @@
         {
             "name": "Kieran",
             "email": "kieran@andersons.bz"
-        }
-    ],
-    "repositories": [
-        {
-            "url": "git@github.com:Kieran-FYI/misc.git",
-            "type": "vcs"
         }
     ],
     "extra": {
@@ -28,6 +23,6 @@
     "require": {
         "php": "^8.1",
         "laravel/framework": "^9.19",
-        "kieranfyi/misc": "dev-main"
+        "kieranfyi/misc": "^0.2"
     }
 }

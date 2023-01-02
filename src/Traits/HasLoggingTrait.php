@@ -10,7 +10,7 @@ trait HasLoggingTrait
      */
     public static function hasLogging(mixed $object): bool
     {
-        return is_object($object) && in_array(LoggingTrait::class, class_uses_recursive($object));
+        return return array_key_exists(LoggingTrait::class, (new ReflectionClass($object))->getTraits());
     }
 
 }

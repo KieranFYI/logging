@@ -198,7 +198,7 @@ trait LoggingTrait
      */
     private static function observeChanges(Model $model, string $action): void
     {
-        if (!static::hasLogging($model)) {
+        if (!in_array(LoggingTrait::class, class_uses_recursive($model))) {
             return;
         }
 

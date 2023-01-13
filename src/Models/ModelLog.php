@@ -42,7 +42,7 @@ class ModelLog extends Model
      */
     public function model(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo()->setEagerLoads([]);
     }
 
     /**
@@ -50,6 +50,6 @@ class ModelLog extends Model
      */
     public function user(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo()->setEagerLoads([]);
     }
 }

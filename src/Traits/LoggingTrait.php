@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use KieranFYI\Logging\Models\ModelLog;
 use TypeError;
@@ -52,6 +53,23 @@ trait LoggingTrait
     }
 
     /**
+     * Defines the key to use for display the class
+     *
+     * @return string
+     */
+    public function title(): mixed
+    {
+        if (property_exists($this, 'title')) {
+            if (!is_string($this->title)) {
+                throw new TypeError(self::class.'::title(): Property ($title) must be of type string');
+            }
+
+            return $this->title;
+        }
+        return $this->getKeyName();
+    }
+
+    /**
      * @return MorphMany
      */
     public function logs(): MorphMany
@@ -72,20 +90,16 @@ trait LoggingTrait
             'context' => $context instanceof Arrayable ? $context->toArray() : $context,
             'data' => $this->toArray(),
         ]);
+        /** @var Model $this */
+        $log->model()->associate($this);
 
-        if (
-            Auth::hasUser()
-            && (
-                Auth::user() !== $this
-                && in_array(Model::class, class_uses_recursive(Auth::user()))
-            )
-        ) {
+        if (is_a(Auth::user(), Model::class, true)) {
             /** @var Model $user */
             $user = Auth::user();
             $log->user()->associate($user);
         }
 
-        $this->logs()->save($log);
+        $log->save();
     }
 
     /**

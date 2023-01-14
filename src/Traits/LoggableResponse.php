@@ -26,43 +26,13 @@ trait LoggableResponse
         abort_unless($this->hasLogging($model), 501);
         /** @var LoggingTrait $model */
 
-        $this->cached(Carbon::parse($model->logs()->max('updated_at')));
+        //$this->cached(Carbon::parse($model->logs()->max('updated_at')));
 
         $logs = $model->logs()
             ->with(['user', 'model']);
 
         // Search
 
-        $paginator = $logs->paginate($request->validated('limit', 15));
-        $paginator->getCollection()->transform(function (ModelLog $log) use ($model) {
-            $log->setAttribute('user_title', $this->classTitle($log->user, 'Unknown User'));
-            $log->setAttribute('model_title', $this->classTitle($log->model));
-            return $log;
-        });
-
-        return response()->json($paginator);
+        return response()->json($logs->paginate($request->validated('limit', 15)));
     }
-
-    /**
-     * @param Model|null $model
-     * @param string|null $default
-     * @return string
-     */
-    private function classTitle(?Model $model, string $default = null): string
-    {
-        if (is_null($model)) {
-            return 'N/A';
-        }
-
-        $parts = explode('\\', get_class($model));
-        $className = array_pop($parts);
-
-        if (!$this->hasLogging($model)) {
-            return $className . ': ' . $model->getKey();
-        }
-
-        /** @var LoggingTrait $model */
-        return $className . ': ' . $model->getAttribute($model->title());
-    }
-
 }

@@ -47,6 +47,10 @@ class ModelLog extends Model
         'id', 'user_title', 'model_title', 'level', 'message', 'context', 'data', 'created_at', 'updated_at'
     ];
 
+    protected $hidden = [
+        'model_id', 'model_type', 'user_id', 'user_type', 'deleted_at'
+    ];
+
     /**
      * @var string[]
      */

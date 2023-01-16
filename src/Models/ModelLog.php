@@ -5,6 +5,7 @@ namespace KieranFYI\Logging\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use KieranFYI\Logging\Traits\HasLoggingTrait;
 use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Misc\Traits\ImmutableTrait;
@@ -16,6 +17,7 @@ use KieranFYI\Misc\Traits\ImmutableTrait;
  * @property array $data
  * @property Model $model
  * @property Model $user
+ * @property string $model_type
  */
 class ModelLog extends Model
 {
@@ -63,7 +65,9 @@ class ModelLog extends Model
      */
     public function model(): MorphTo
     {
-        return $this->morphTo()->setEagerLoads([]);
+        return $this->morphTo()
+            ->withoutGlobalScopes([SoftDeletingScope::class])
+            ->setEagerLoads([]);
     }
 
     /**
@@ -71,7 +75,9 @@ class ModelLog extends Model
      */
     public function user(): MorphTo
     {
-        return $this->morphTo()->setEagerLoads([]);
+        return $this->morphTo()
+            ->withoutGlobalScopes([SoftDeletingScope::class])
+            ->setEagerLoads([]);
     }
 
     /**
@@ -87,6 +93,10 @@ class ModelLog extends Model
      */
     public function getModelTitleAttribute(): string
     {
+        if (is_null($this->model)) {
+            $model = new $this->model_type($this->data);
+            return $this->classTitle($model) . ' (Hard Deleted)';
+        }
         return $this->classTitle($this->model);
     }
 
@@ -103,12 +113,16 @@ class ModelLog extends Model
 
         $parts = explode('\\', get_class($model));
         $className = array_pop($parts);
+        $value = $model->getAttribute($this->hasLogging($model) ? $model->title() : $model->getKey());
 
-        if (!$this->hasLogging($model)) {
-            return $className . ': ' . $model->getKey();
+        if (is_null($value)) {
+            return 'Unknown';
         }
 
-        /** @var LoggingTrait $model */
-        return $className . ': ' . $model->getAttribute($model->title());
+        if (is_null($model->deleted_at)) {
+            return $className . ': ' . $value . ' (Soft Deleted)';
+        }
+
+        return $className . ': ' . $value;
     }
 }

@@ -105,22 +105,27 @@ class ModelLog extends Model
      */
     public function getModelTitleAttribute(): string
     {
+        $model = $this->model;
         $parts = explode('\\', $this->model_type);
         $className = array_pop($parts);
-        $model = $this->model;
         $hardDeleted = false;
 
         if (is_null($model)) {
+            $hardDeleted = true;
             try {
                 $model = new $this->model_type($this->data);
             } catch (Exception) {
             }
         }
-
-        if (!is_null($model) && method_exists($model, 'getTitleDetailedAttribute')) {
-            return $model->title_detailed . ($hardDeleted ? ' (Hard Deleted)' : '');
+        if (is_null($model) || !in_array(KeyedTitle::class, class_uses_recursive($model))) {
+            return $className . ': ' . $this->model_id . ' (Hard Deleted)';
         }
 
-        return $className . ': ' . $this->model_id . ($hardDeleted ? ' (Hard Deleted)' : '');
+        /** @var KeyedTitle $model */
+        if ($hardDeleted) {
+            return $className . ': ' . $model->title . ' (Hard Deleted)';
+        }
+
+        return $model->title_detailed;
     }
 }

@@ -53,23 +53,6 @@ trait LoggingTrait
     }
 
     /**
-     * Defines the key to use for display the class
-     *
-     * @return string
-     */
-    public function title(): mixed
-    {
-        if (property_exists($this, 'title')) {
-            if (!is_string($this->title)) {
-                throw new TypeError(self::class.'::title(): Property ($title) must be of type string');
-            }
-
-            return $this->title;
-        }
-        return $this->getKeyName();
-    }
-
-    /**
      * @return MorphMany
      */
     public function logs(): MorphMany

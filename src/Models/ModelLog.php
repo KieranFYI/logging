@@ -2,13 +2,14 @@
 
 namespace KieranFYI\Logging\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use KieranFYI\Logging\Traits\HasLoggingTrait;
-use KieranFYI\Logging\Traits\LoggingTrait;
 use KieranFYI\Misc\Traits\ImmutableTrait;
+use KieranFYI\Misc\Traits\KeyedTitle;
 
 /**
  * @property string $level
@@ -18,12 +19,16 @@ use KieranFYI\Misc\Traits\ImmutableTrait;
  * @property Model $model
  * @property Model $user
  * @property string $model_type
+ * @property int $model_id
+ * @property string $user_type
+ * @property int $user_id
  */
 class ModelLog extends Model
 {
     use SoftDeletes;
     use ImmutableTrait;
     use HasLoggingTrait;
+    use KeyedTitle;
 
     // FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(datetime)/300)*300)
 
@@ -85,7 +90,14 @@ class ModelLog extends Model
      */
     public function getUserTitleAttribute(): string
     {
-        return $this->classTitle($this->user, 'Unknown User');
+        $parts = explode('\\', $this->user_type);
+        $className = array_pop($parts);
+
+        if (!is_null($this->user) && method_exists($this->user, 'getTitleDetailedAttribute')) {
+            return $this->user->title_detailed;
+        }
+
+        return $className . ': ' . $this->user_id;
     }
 
     /**
@@ -93,36 +105,22 @@ class ModelLog extends Model
      */
     public function getModelTitleAttribute(): string
     {
-        if (is_null($this->model)) {
-            $model = new $this->model_type($this->data);
-            return $this->classTitle($model) . ' (Hard Deleted)';
-        }
-        return $this->classTitle($this->model);
-    }
-
-    /**
-     * @param Model|null $model
-     * @param string|null $default
-     * @return string
-     */
-    private function classTitle(?Model $model, string $default = null): string
-    {
-        if (is_null($model)) {
-            return 'N/A';
-        }
-
-        $parts = explode('\\', get_class($model));
+        $parts = explode('\\', $this->model_type);
         $className = array_pop($parts);
-        $value = $model->getAttribute($this->hasLogging($model) ? $model->title() : $model->getKey());
+        $model = $this->model;
+        $hardDeleted = false;
 
-        if (is_null($value)) {
-            return 'Unknown';
+        if (is_null($model)) {
+            try {
+                $model = new $this->model_type($this->data);
+            } catch (Exception) {
+            }
         }
 
-        if (is_null($model->deleted_at)) {
-            return $className . ': ' . $value . ' (Soft Deleted)';
+        if (!is_null($model) && method_exists($model, 'getTitleDetailedAttribute')) {
+            return $model->title_detailed . ($hardDeleted ? ' (Hard Deleted)' : '');
         }
 
-        return $className . ': ' . $value;
+        return $className . ': ' . $this->model_id . ($hardDeleted ? ' (Hard Deleted)' : '');
     }
 }

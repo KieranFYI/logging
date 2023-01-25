@@ -20,17 +20,17 @@ trait LoggingTrait
 {
     use HasLoggingTrait;
 
-    public static function bootLoggingTrait()
+    public static function bootLoggingTrait(): void
     {
-        static::updated(function (Model $model) {
+        static::updated(function (self $model) {
             static::observeChanges($model, 'updated');
         });
 
-        static::created(function (Model $model) {
+        static::created(function (self $model) {
             static::observeChanges($model, 'created');
         });
 
-        static::deleted(function (Model $model) {
+        static::deleted(function (self $model) {
             static::observeChanges($model, 'deleted');
         });
     }
@@ -188,17 +188,13 @@ trait LoggingTrait
     }
 
     /**
-     * @param HasLoggingTrait $model
+     * @param LoggingTrait $model
      * @param string $action
      *
      * @return void
      */
-    private static function observeChanges(Model $model, string $action): void
+    private static function observeChanges(self $model, string $action): void
     {
-        if (!in_array(LoggingTrait::class, class_uses_recursive($model))) {
-            return;
-        }
-
         $model->log(
             'change',
             ucfirst($action),
@@ -213,11 +209,11 @@ trait LoggingTrait
     /**
      * Removes hidden keys, so they are not stored in the database.
      *
-     * @param Model $model
+     * @param LoggingTrait $model
      * @param array $array
      * @return array
      */
-    private static function cleanKeys(Model $model, array $array): array
+    private static function cleanKeys(self $model, array $array): array
     {
         return array_diff_key($array, array_flip($model->getHidden()));
     }

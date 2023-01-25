@@ -22,6 +22,8 @@ use KieranFYI\Misc\Traits\KeyedTitle;
  * @property int $model_id
  * @property string $user_type
  * @property int $user_id
+ * @property string $user_title
+ * @property string $model_title
  */
 class ModelLog extends Model
 {
@@ -90,14 +92,23 @@ class ModelLog extends Model
      */
     public function getUserTitleAttribute(): string
     {
-        $parts = explode('\\', $this->user_type);
-        $className = array_pop($parts);
-
-        if (!is_null($this->user) && method_exists($this->user, 'getTitleDetailedAttribute')) {
-            return $this->user->title_detailed;
+        if (empty($this->user_type)) {
+            return 'Unknown';
         }
 
-        return $className . ': ' . $this->user_id;
+        $parts = explode('\\', $this->user_type);
+        $className = array_pop($parts);
+        $title = $className . ': ' . $this->user_id;
+
+        if (is_null($this->user)) {
+            return $title . ' (Deleted)';
+        }
+
+        if (method_exists($this->user, 'getTitleDetailedAttribute')) {
+            return $this->user->getTitleDetailedAttribute();
+        }
+
+        return $title;
     }
 
     /**
@@ -105,27 +116,36 @@ class ModelLog extends Model
      */
     public function getModelTitleAttribute(): string
     {
-        $model = $this->model;
+        if (empty($this->model_type)) {
+            return 'Unknown';
+        }
+
         $parts = explode('\\', $this->model_type);
         $className = array_pop($parts);
-        $hardDeleted = false;
+        $title = $className . ': ' . $this->model_id;
 
-        if (is_null($model)) {
-            $hardDeleted = true;
-            try {
-                $model = new $this->model_type($this->data);
-            } catch (Exception) {
+        if (is_null($this->model) && is_array($this->data) && class_exists($this->model_type)) {
+            $data = $this->data;
+            if (!empty($data['deleted_at'])) {
+                unset($data['deleted_at']);
+            }
+            /** @var Model $model */
+            $model = new $this->model_type();
+            $model->setRawAttributes($data);
+
+            if (method_exists($model, 'getTitleDetailedAttribute')) {
+                return $model->getTitleDetailedAttribute() . ' (Deleted)';
             }
         }
-        if (is_null($model) || !in_array(KeyedTitle::class, class_uses_recursive($model))) {
-            return $className . ': ' . $this->model_id . ' (Hard Deleted)';
+
+        if (is_null($this->model)) {
+            return $title . ' (Deleted)';
         }
 
-        /** @var KeyedTitle $model */
-        if ($hardDeleted) {
-            return $className . ': ' . $model->title . ' (Hard Deleted)';
+        if (method_exists($this->model, 'getTitleDetailedAttribute')) {
+            return $this->model->getTitleDetailedAttribute();
         }
 
-        return $model->title_detailed;
+        return $title;
     }
 }

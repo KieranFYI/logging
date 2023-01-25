@@ -7,6 +7,11 @@
             "KieranFYI\\Logging\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "KieranFYI\\Tests\\Logging\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Kieran",
@@ -23,6 +28,10 @@
     "require": {
         "php": "^8.1",
         "laravel/framework": "^9.19",
-        "kieranfyi/misc": "^0.3.11"
+        "kieranfyi/misc": "^0.3.13"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^7.19"
     }
 }

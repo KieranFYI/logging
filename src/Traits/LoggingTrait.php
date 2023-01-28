@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use KieranFYI\Logging\Models\ModelLog;
+use Throwable;
 use TypeError;
 
 /**
@@ -22,12 +23,12 @@ trait LoggingTrait
 
     public static function bootLoggingTrait(): void
     {
-        static::updated(function (self $model) {
-            static::observeChanges($model, 'updated');
-        });
-
         static::created(function (self $model) {
             static::observeChanges($model, 'created');
+        });
+
+        static::updated(function (self $model) {
+            static::observeChanges($model, 'updated');
         });
 
         static::deleted(function (self $model) {
@@ -44,7 +45,7 @@ trait LoggingTrait
     {
         if (property_exists($this, 'morphTarget')) {
             if (!is_string($this->morphTarget)) {
-                throw new TypeError(self::class.'::morphTarget(): Property ($morphTarget) must be of type string');
+                throw new TypeError(self::class . '::morphTarget(): Property ($morphTarget) must be of type string');
             }
 
             return $this->morphTarget;
@@ -87,12 +88,12 @@ trait LoggingTrait
 
     /**
      * @param string $level
-     * @param string|Exception $message
+     * @param string|Throwable $message
      * @param array|Arrayable $context
      */
-    public function exception(string $level, string|Exception $message, array|Arrayable $context = []): void
+    public function exception(string $level, string|Throwable $message, array|Arrayable $context = []): void
     {
-        if ($message instanceof Exception) {
+        if ($message instanceof Throwable) {
             $this->log(
                 $level,
                 $message->getMessage(),
@@ -199,22 +200,10 @@ trait LoggingTrait
             'change',
             ucfirst($action),
             [
-            'action' => $action,
-            'new' => $action !== 'deleted' ? static::cleanKeys($model, $model->getAttributes()) : null,
-            'old' => $action !== 'created' ? static::cleanKeys($model, $model->getOriginal()) : null,
-            'changes' => $action === 'updated' ? static::cleanKeys($model, $model->getChanges()) : null,
-        ]);
-    }
-
-    /**
-     * Removes hidden keys, so they are not stored in the database.
-     *
-     * @param LoggingTrait $model
-     * @param array $array
-     * @return array
-     */
-    private static function cleanKeys(self $model, array $array): array
-    {
-        return array_diff_key($array, array_flip($model->getHidden()));
+                'action' => $action,
+                'new' => $action !== 'deleted' ? $model->getAttributes() : null,
+                'old' => $action !== 'created' ? $model->getOriginal() : null,
+                'changes' => $action === 'updated' ? $model->getChanges() : null,
+            ]);
     }
 }

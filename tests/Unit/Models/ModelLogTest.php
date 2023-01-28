@@ -32,14 +32,14 @@ class ModelLogTest extends TestCase
 
         Schema::create('keyed_title_models', function ($table) {
             $table->temporary();
-            $table->increments('id');
+            $table->id();
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::create('basic_models', function ($table) {
             $table->temporary();
-            $table->increments('id');
+            $table->id();
             $table->timestamps();
         });
     }

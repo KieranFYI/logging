@@ -13,6 +13,7 @@ use KieranFYI\Misc\Traits\KeyedTitle;
 
 /**
  * @property string $level
+ * @property string $action
  * @property string $message
  * @property array $context
  * @property array $data

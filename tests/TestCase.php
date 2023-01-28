@@ -4,6 +4,7 @@ namespace KieranFYI\Tests\Logging;
 
 use Illuminate\Foundation\Application;
 use KieranFYI\Logging\Providers\LoggingPackageServiceProvider;
+use KieranFYI\Misc\Providers\MiscPackageServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 class TestCase extends OrchestraTestCase
@@ -25,6 +26,7 @@ class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app)
     {
         return [
+            MiscPackageServiceProvider::class,
             LoggingPackageServiceProvider::class,
         ];
     }

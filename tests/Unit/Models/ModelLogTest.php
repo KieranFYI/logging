@@ -3,6 +3,7 @@
 namespace KieranFYI\Tests\Logging\Unit\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
@@ -42,6 +43,11 @@ class ModelLogTest extends TestCase
             $table->id();
             $table->timestamps();
         });
+    }
+
+    public function testModel()
+    {
+        $this->assertInstanceOf(Model::class, $this->model);
     }
 
     public function testTraits()

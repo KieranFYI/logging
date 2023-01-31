@@ -26,12 +26,9 @@ trait LoggableResponse
         abort_unless($this->hasLogging($model), 501);
         /** @var LoggingTrait $model */
 
-        //$this->cached(Carbon::parse($model->logs()->max('updated_at')));
-
         $logs = $model->logs()
-            ->with(['user', 'model']);
-
-        // Search
+            ->with(['user', 'model'])
+            ->orderByDesc('created_at');
 
         return response()->json($logs->paginate($request->validated('limit', 15)));
     }

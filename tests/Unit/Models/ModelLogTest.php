@@ -100,7 +100,7 @@ class ModelLogTest extends TestCase
     public function testAppends()
     {
         $appends = [
-            'user_title', 'model_title'
+            'user_title', 'model_title', 'title', 'title_detailed'
         ];
         $this->assertEquals($appends, $this->model->getAppends());
     }

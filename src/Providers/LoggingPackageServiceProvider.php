@@ -2,7 +2,9 @@
 
 namespace KieranFYI\Logging\Providers;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
+use KieranFYI\Logging\Models\ModelLog;
 
 class LoggingPackageServiceProvider extends ServiceProvider
 {
@@ -13,6 +15,10 @@ class LoggingPackageServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+        Relation::morphMap([
+            'modelLog' => ModelLog::class
+        ]);
+
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
     }
 }
